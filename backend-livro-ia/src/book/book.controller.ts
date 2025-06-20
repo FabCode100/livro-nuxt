@@ -1,6 +1,22 @@
-import { Controller, Get, Param, Res, Put, Body, Delete, HttpException, HttpStatus, Post } from '@nestjs/common'
-import { BookService } from './book.service'
+import {
+    Controller,
+    Get,
+    Param,
+    Res,
+    Put,
+    Body,
+    Delete,
+    HttpException,
+    HttpStatus,
+    Post,
+    UploadedFile,
+    UseInterceptors
+} from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
+import { BookService } from './book.service'
+import { diskStorage } from 'multer'
+import { extname } from 'path'
 
 @Controller('books')
 export class BookController {
@@ -11,11 +27,28 @@ export class BookController {
     getAllBooks() {
         return this.bookService.listarBooks()
     }
+
+    // Criar livro com imagem
     @Post()
-    async createBook(@Body('titulo') titulo: string) {
-        return this.bookService.criarLivro(titulo)
-    }
-    // Gerar PDF de um livro
+    @UseInterceptors(FileInterceptor('capa', {
+        storage: diskStorage({
+            destination: './uploads/capas',
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+                cb(null, `${uniqueSuffix}${extname(file.originalname)}`)
+            }
+        })
+    }))
+    @Post()
+async createBook(
+    @Body('titulo') titulo: string,
+    @Body('capa') capa?: string
+) {
+    return this.bookService.criarLivro(titulo, capa)
+}
+
+
+    // Gerar PDF
     @Get(':bookId/pdf')
     async gerarPDF(@Param('bookId') bookId: string, @Res() res: Response) {
         try {
@@ -29,7 +62,7 @@ export class BookController {
         }
     }
 
-    // Atualizar título do livro
+    // Atualizar título
     @Put(':id')
     async atualizar(@Param('id') id: string, @Body('titulo') titulo: string) {
         const livro = await this.bookService.atualizarLivro(id, titulo)
@@ -39,7 +72,7 @@ export class BookController {
         return livro
     }
 
-    // Deletar livro
+    // Deletar
     @Delete(':id')
     async deletar(@Param('id') id: string) {
         const resultado = await this.bookService.deletarLivro(id)

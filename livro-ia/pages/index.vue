@@ -1,79 +1,73 @@
 <template>
-    <Fireflies />
-    <AmbientSound />
-    <div
-      class="relative z-10 min-h-screen bg-gradient-to-b from-[#0a1128] via-[#1f1f38] to-[#362f53] flex flex-col items-center justify-center px-6 py-12"
-    >
+  <Fireflies />
+  <AmbientSound />
+
+  <div
+    class="relative z-10 min-h-screen bg-gradient-to-b from-[#0a1128] via-[#1f1f38] to-[#362f53] flex flex-col items-center px-6 py-12"
+  >
+    <!-- Cabeçalho -->
+    <header class="w-full max-w-5xl flex items-center justify-between mb-10">
       <h1
-  class="text-5xl leading-tight font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-indigo-400 to-purple-500 mb-12 drop-shadow-lg"
-  aria-label="Escritor Mágico"
->
-  Escritor Mágico ❄️🌌
-</h1>
-
-  
-      <textarea
-        v-model="prompt"
-        placeholder="Descreva a ideia do seu livro encantado..."
-        class="w-full max-w-xl h-36 p-4 rounded-xl bg-[#1e1e2f] placeholder:text-sky-300 text-sky-100 resize-none shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-500 transition mb-6"
-        aria-label="Prompt para geração de capítulo"
-      />
-  
-      <button
-  @click="gerarCapitulo"
-  :disabled="loading || !prompt.trim()"
-  class="w-full max-w-xl bg-gradient-to-r from-indigo-400 via-purple-500 hover:from-indigo-500 hover:via-purple-600 hover:to-sky-600 disabled:opacity-50 text-white font-semibold py-4 rounded-xl shadow-lg transition flex justify-center items-center gap-3"
-  :aria-busy="loading"
-  :aria-disabled="loading || !prompt.trim()"
->
-  <LoadingSpinner v-if="loading" />
-  <span v-else>Gerar Capítulo</span>
-</button>
-
-<p v-if="loading" class="mt-4 text-center text-indigo-300">Gerando capítulo, aguarde...</p>
-
-<p v-if="errorMessage" class="mt-4 text-center text-red-500">{{ errorMessage }}</p>
-
-  
-      <section
-        v-if="capitulo"
-        class="mt-10 max-w-xl bg-[#1e1e2f]/90 p-8 rounded-2xl shadow-2xl text-sky-100 whitespace-pre-wrap drop-shadow-md"
-        role="region"
-        aria-live="polite"
+        class="text-5xl leading-tight font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-indigo-400 to-purple-500 drop-shadow-lg"
+        aria-label="Escritor Mágico"
       >
-        <h2 class="text-3xl font-bold mb-6 text-indigo-300">Capítulo Gerado:</h2>
-        <p>{{ capitulo }}</p>
+        Escritor Mágico ❄️🌌
+      </h1>
+      <nav class="space-x-6 text-sky-300 font-semibold">
+        <button class="hover:text-purple-400 transition">Biblioteca</button>
+        <button class="hover:text-purple-400 transition">Feed</button>
+        <button class="hover:text-purple-400 transition">Perfil</button>
+      </nav>
+    </header>
+
+    <!-- Área principal -->
+    <main class="w-full max-w-5xl flex flex-col md:flex-row gap-10">
+      <!-- Input de criação -->
+      <section class="flex-1 bg-[#1e1f38] rounded-lg p-6 shadow-lg">
+        <PromptInput @capituloGerado="capitulo => capituloGerado = capitulo" />
       </section>
-    </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue'
-  import axios from 'axios'
-  import LoadingSpinner from '~/components/LoadingSpinner.vue'
-  import Fireflies from '~/components/Fireflies.vue'
-  import AmbientSound from '~/components/AmbientSound.vue'
-  
-  const prompt = ref('')
-  const capitulo = ref('')
-  const errorMessage = ref('')
-  const loading = ref(false)
-  
-  async function gerarCapitulo() {
-    if (!prompt.value.trim()) return
-  
-    loading.value = true
-    errorMessage.value = ''
-    capitulo.value = ''
-  
-    try {
-      const { data } = await axios.post('http://localhost:3002/gerar', { prompt: prompt.value })
-      capitulo.value = data.capitulo
-    } catch (error: any) {
-      alert('Erro ao gerar capítulo: ' + (error.message || error))
-    } finally {
-      loading.value = false
-    }
-  }
-  </script>
-  
+
+      <!-- Exibição do capítulo -->
+      <section class="flex-1 bg-[#282a4e] rounded-lg p-6 shadow-lg overflow-auto max-h-[600px]">
+        <ChapterDisplay v-if="capituloGerado" :capitulo="capituloGerado" />
+        <p v-else class="text-sky-300/60 italic">Seu capítulo aparecerá aqui.</p>
+      </section>
+    </main>
+
+    <!-- Biblioteca do usuário -->
+    <LibraryShelf class="mt-16" />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useHead } from '#app' // ✅ Import para preload
+
+import Fireflies from '@/components/Fireflies.vue'
+import AmbientSound from '@/components/AmbientSound.vue'
+import PromptInput from '@/components/PromptInput.vue'
+import ChapterDisplay from '@/components/ChapterDisplay.vue'
+import LibraryShelf from '@/components/LibraryShelf.vue'
+
+const capituloGerado = ref(null)
+
+// ✅ Capas a serem usadas no seletor
+const capasDisponiveis = [
+  'capa1.jpg',
+  'capa2.jpg',
+  'capa3.jpg',
+  'capa4.jpg',
+  'capa5.jpg',
+  'capa6.jpg'
+]
+
+// ✅ Pré-carregar capas no <head>
+useHead({
+  link: capasDisponiveis.map(capa => ({
+    rel: 'preload',
+    as: 'image',
+    href: `/covers/${capa}`
+  }))
+})
+</script>
+

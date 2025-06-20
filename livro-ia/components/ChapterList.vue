@@ -3,10 +3,12 @@
     <div
       v-for="cap in capitulos"
       :key="cap._id"
-      class="p-5 bg-[#1e1e2f] rounded-xl shadow text-sky-100"
+      class="p-6 bg-[#1e1e2f] rounded-xl shadow text-sky-100"
     >
-      <h3 class="text-lg font-semibold mb-2">Capítulo {{ cap.ordem }}</h3>
-      <p class="whitespace-pre-line text-sm">{{ cap.capitulo.slice(0, 200) }}...</p>
+      <h3 class="text-lg font-semibold mb-4">Capítulo {{ cap.ordem }}</h3>
+      <p class="whitespace-pre-wrap text-sm leading-relaxed">
+        {{ cap.capitulo }}
+      </p>
     </div>
   </div>
 </template>

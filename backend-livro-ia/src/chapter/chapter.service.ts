@@ -9,7 +9,7 @@ import { GeminiService } from '../ia/gemini.service'
 export class ChapterService {
     constructor(
         @InjectModel(Chapter.name) private chapterModel: Model<ChapterDocument>,
-        @InjectModel(Book.name) private bookModel: Model<BookDocument>,
+        @InjectModel(Book.name) private readonly bookModel: Model<Book>,
         private readonly geminiService: GeminiService
     ) { }
 

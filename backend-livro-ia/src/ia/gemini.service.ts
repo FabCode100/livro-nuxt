@@ -13,7 +13,9 @@ export class GeminiService {
 
     async gerarTexto(prompt: string): Promise<string> {
         const result = await this.model.generateContent(
-            `Você é um escritor de fantasia. Escreva um capítulo baseado na seguinte ideia: ${prompt}`
+            `Você é um escritor de fantasia. Escreva um capítulo baseado na seguinte ideia: ${prompt}. 
+         Por favor, NÃO use nenhum markdown, asteriscos, hashtags ou formatações especiais. 
+         Retorne apenas o texto puro, com título simples, sem símbolos extras.`
         )
         const response = await result.response
         return response.text()

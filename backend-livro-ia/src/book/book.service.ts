@@ -16,10 +16,11 @@ export class BookService {
     async listarBooks() {
         return this.bookModel.find().exec()
     }
-    async criarLivro(titulo: string) {
-        const novoLivro = new this.bookModel({ titulo })
-        return novoLivro.save()
+    async criarLivro(titulo: string, capa?: string) {
+        const livro = new this.bookModel({ titulo, capa }) 
+        return livro.save()
     }
+
     async gerarPDF(bookId: string): Promise<NodeJS.ReadableStream> {
         const capitulos = await this.chapterService.findByLivroId(bookId)
         const doc = new PDFDocument()
