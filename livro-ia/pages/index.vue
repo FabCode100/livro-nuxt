@@ -12,7 +12,7 @@
         <h1
           class="text-5xl leading-tight font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-indigo-400 to-purple-500 drop-shadow-lg"
           aria-label="Escritor Mágico">
-          Escritor Mágico ❄️🌌
+          Escritor Mágico
         </h1>
         <nav class="space-x-6 text-sky-300 font-semibold">
           <button class="hover:text-purple-400 transition">Biblioteca</button>
