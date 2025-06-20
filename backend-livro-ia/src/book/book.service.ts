@@ -17,7 +17,7 @@ export class BookService {
         return this.bookModel.find().exec()
     }
     async criarLivro(titulo: string, capa?: string) {
-        const livro = new this.bookModel({ titulo, capa }) 
+        const livro = new this.bookModel({ titulo, capa })
         return livro.save()
     }
 
@@ -38,6 +38,9 @@ export class BookService {
 
         doc.end()
         return stream
+    }
+    async buscarLivroPorId(id: string) {
+        return await this.bookModel.findById(id) // Ou como acessar seu repositório
     }
 
     async atualizarLivro(id: string, titulo: string) {

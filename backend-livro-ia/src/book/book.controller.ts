@@ -40,12 +40,12 @@ export class BookController {
         })
     }))
     @Post()
-async createBook(
-    @Body('titulo') titulo: string,
-    @Body('capa') capa?: string
-) {
-    return this.bookService.criarLivro(titulo, capa)
-}
+    async createBook(
+        @Body('titulo') titulo: string,
+        @Body('capa') capa?: string
+    ) {
+        return this.bookService.criarLivro(titulo, capa)
+    }
 
 
     // Gerar PDF
@@ -60,6 +60,14 @@ async createBook(
         } catch (error) {
             throw new HttpException('Erro ao gerar PDF', HttpStatus.INTERNAL_SERVER_ERROR)
         }
+    }
+    @Get(':id')
+    async getBookById(@Param('id') id: string) {
+        const livro = await this.bookService.buscarLivroPorId(id)
+        if (!livro) {
+            throw new HttpException('Livro não encontrado', HttpStatus.NOT_FOUND)
+        }
+        return livro
     }
 
     // Atualizar título
