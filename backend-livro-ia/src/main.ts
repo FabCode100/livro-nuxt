@@ -6,6 +6,6 @@ import 'dotenv/config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors(); // Isso é importante!
-  await app.listen(3001); // Porta da sua API
+  await app.listen(3002); // Porta da sua API
 }
 bootstrap();
